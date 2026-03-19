@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 
 import { getPublicEnv, getServerEnv } from '@/lib/env';
 
@@ -29,5 +30,18 @@ describe('env helpers', () => {
       supabaseUrl: 'https://example.supabase.co',
       supabaseAnonKey: 'anon-key'
     });
+  });
+
+  it('keeps the example env file aligned with production keys', () => {
+    const envExample = readFileSync('.env.example', 'utf8');
+
+    expect(envExample).toContain('NEXT_PUBLIC_SUPABASE_URL');
+    expect(envExample).toContain('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+    expect(envExample).toContain('SUPABASE_SERVICE_ROLE_KEY');
+    expect(envExample).toContain('NVIDIA_API_KEY');
+    expect(envExample).toContain('NVIDIA_MODERATION_MODEL');
+    expect(envExample).toContain('OPENROUTER_API_KEY');
+    expect(envExample).toContain('OPENROUTER_MODEL');
+    expect(envExample).toContain('MODERATION_FALLBACK_ENABLED');
   });
 });
