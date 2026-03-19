@@ -1,0 +1,47 @@
+:root {
+  color-scheme: light;
+  --bg: #f6f1e8;
+  --surface: #fffaf2;
+  --line: #d8c5ab;
+  --text: #2b2118;
+  --muted: #766453;
+  --accent: #8c4f2b;
+  --accent-soft: #ead2bf;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: radial-gradient(circle at top, #fff6ea 0%, var(--bg) 55%, #ead8c6 100%);
+  color: var(--text);
+  font-family: "Noto Sans TC", "Segoe UI", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+.shell {
+  width: min(960px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.hero {
+  padding: 5rem 0 2rem;
+}
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--surface) 88%, white);
+  box-shadow: 0 20px 60px rgba(61, 36, 15, 0.08);
+}
