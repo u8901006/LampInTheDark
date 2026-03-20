@@ -8,6 +8,12 @@ import { createSupabaseServerClients } from '@/lib/supabase/server';
 
 export function createRuntimePostDependencies(envSource?: EnvSource) {
   const env = getServerEnv(envSource ?? (process.env as EnvSource));
+  const clients = createSupabaseServerClients({
+    url: env.supabase.url,
+    anonKey: env.supabase.anonKey,
+    serviceRoleKey: env.supabase.serviceRoleKey
+  });
+  const repository = createPostRepository(clients.admin);
   const moderationConfig = getModerationConfig({
     NVIDIA_API_KEY: env.moderation.nvidiaApiKey,
     NVIDIA_MODERATION_MODEL: env.moderation.nvidiaModel,
@@ -15,12 +21,6 @@ export function createRuntimePostDependencies(envSource?: EnvSource) {
     OPENROUTER_MODEL: env.moderation.openRouterModel,
     MODERATION_FALLBACK_ENABLED: 'true'
   });
-  const clients = createSupabaseServerClients({
-    url: env.supabase.url,
-    anonKey: env.supabase.anonKey,
-    serviceRoleKey: env.supabase.serviceRoleKey
-  });
-  const repository = createPostRepository(clients.admin);
   const moderateWithNvidia = createModerateWithNvidia({
     apiKey: moderationConfig.providers.primary.apiKey,
     model: moderationConfig.providers.primary.model
@@ -41,6 +41,23 @@ export function createRuntimePostDependencies(envSource?: EnvSource) {
   return {
     moderate,
     savePost: repository.savePost,
-    listAdminQueue: repository.listAdminQueue
+    listAdminQueue: repository.listAdminQueue,
+    findPostByTrackingCode: repository.findPostByTrackingCode,
+    listPublicPosts: repository.listPublicPosts
+  };
+}
+
+export function createPublicRuntimePostDependencies(envSource?: EnvSource) {
+  const env = getServerEnv(envSource ?? (process.env as EnvSource));
+  const clients = createSupabaseServerClients({
+    url: env.supabase.url,
+    anonKey: env.supabase.anonKey,
+    serviceRoleKey: env.supabase.serviceRoleKey
+  });
+  const repository = createPostRepository(clients.admin);
+
+  return {
+    findPostByTrackingCode: repository.findPostByTrackingCode,
+    listPublicPosts: repository.listPublicPosts
   };
 }

@@ -12,7 +12,10 @@ describe('public anonymous write UI', () => {
 
     expect(home).toContain('匿名留言');
     expect(home).toContain('/write');
+    expect(home).toContain('/posts');
+    expect(home).toContain('/my-post');
     expect(write).toContain('匿名留言');
     expect(write).toContain('你的內容會先進行審核');
+    expect(write).toContain('/my-post');
   });
 });

@@ -7,6 +7,7 @@ import {
   getSubmissionMessage,
   validateAnonymousPostInput
 } from '@/components/post/anonymous-post-form';
+import { SubmissionResult } from '@/components/post/submission-result';
 
 describe('anonymous post form behavior', () => {
   it('returns Traditional Chinese validation errors', () => {
@@ -30,5 +31,15 @@ describe('anonymous post form behavior', () => {
     expect(markup).toContain('送出匿名留言');
     expect(markup).toContain('留言內容');
     expect(markup).toContain('情緒標籤');
+  });
+
+  it('renders tracking code guidance after a successful submission', () => {
+    const markup = renderToStaticMarkup(
+      <SubmissionResult state="APPROVED" trackingCode="track_12345678" />
+    );
+
+    expect(markup).toContain('track_12345678');
+    expect(markup).toContain('/my-post');
+    expect(markup).toContain('查詢碼');
   });
 });

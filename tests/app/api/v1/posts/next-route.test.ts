@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { createPostMethod } from '@/lib/api/posts';
+import { createPostMethod, createPublicPostsMethod } from '@/lib/api/posts';
 
 describe('POST /api/v1/posts Next route', () => {
   it('returns a 201 response for an approved post', async () => {
@@ -32,6 +32,30 @@ describe('POST /api/v1/posts Next route', () => {
         status: 'APPROVED',
         publiclyVisible: true
       }
+    });
+  });
+
+  it('returns only approved posts from the public feed', async () => {
+    const response = await createPublicPostsMethod({
+      listPublicPosts: vi.fn().mockResolvedValue([
+        {
+          id: 'post_public_1',
+          content: 'Approved post',
+          emotionTags: ['hope'],
+          createdAt: '2026-03-20T10:00:00.000Z'
+        }
+      ])
+    })(new Request('http://localhost/api/v1/posts'));
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      success: true,
+      data: [
+        {
+          id: 'post_public_1',
+          content: 'Approved post'
+        }
+      ]
     });
   });
 });

@@ -16,6 +16,7 @@ describe('createPostRepository', () => {
 
     await repository.savePost({
       id: 'post_123',
+      trackingCode: 'track_123',
       content: 'This is a persisted test post.',
       emotionTags: ['hope'],
       deviceFingerprintHash: 'device_hash',
@@ -40,6 +41,7 @@ describe('createPostRepository', () => {
       'posts',
       expect.objectContaining({
         id: 'post_123',
+        tracking_code: 'track_123',
         status: 'MANUAL_REVIEW',
         moderation_path: 'nvidia->openrouter->manual'
       })
@@ -62,6 +64,8 @@ describe('createPostRepository', () => {
       data: [
         {
           id: 'post_123',
+          tracking_code: 'track_123',
+          content: 'Queue content',
           status: 'MANUAL_REVIEW',
           moderation_path: 'nvidia->manual',
           moderation_runs: [
@@ -89,6 +93,7 @@ describe('createPostRepository', () => {
     expect(queue).toEqual([
       expect.objectContaining({
         id: 'post_123',
+        trackingCode: 'track_123',
         status: 'MANUAL_REVIEW',
         moderationPath: 'nvidia->manual',
         moderationRuns: [
@@ -98,6 +103,78 @@ describe('createPostRepository', () => {
           })
         ]
       })
+    ]);
+  });
+
+  it('finds a post by tracking code', async () => {
+    const maybeSingle = vi.fn().mockResolvedValue({
+      data: {
+        id: 'post_lookup',
+        tracking_code: 'lookup123',
+        content: 'Lookup content',
+        emotion_tags: ['hope'],
+        status: 'MANUAL_REVIEW',
+        moderation_path: 'nvidia->manual',
+        created_at: '2026-03-20T10:00:00.000Z'
+      },
+      error: null
+    });
+    const eq = vi.fn(() => ({ maybeSingle }));
+    const select = vi.fn(() => ({ eq }));
+    const from = vi.fn(() => ({ select }));
+
+    const repository = createPostRepository({ from } as never);
+    const post = await repository.findPostByTrackingCode('lookup123');
+
+    expect(post).toEqual({
+      id: 'post_lookup',
+      trackingCode: 'lookup123',
+      content: 'Lookup content',
+      emotionTags: ['hope'],
+      status: 'MANUAL_REVIEW',
+      moderationPath: 'nvidia->manual',
+      createdAt: '2026-03-20T10:00:00.000Z'
+    });
+  });
+
+  it('lists only approved public posts ordered newest first', async () => {
+    const order = vi.fn().mockResolvedValue({
+      data: [
+        {
+          id: 'post_public_1',
+          tracking_code: 'pub1',
+          content: 'Approved post',
+          emotion_tags: ['hope'],
+          status: 'APPROVED',
+          moderation_path: 'nvidia',
+          created_at: '2026-03-20T10:00:00.000Z'
+        },
+        {
+          id: 'post_public_2',
+          tracking_code: 'pub2',
+          content: 'Rejected post',
+          emotion_tags: ['anger'],
+          status: 'REJECTED',
+          moderation_path: 'nvidia',
+          created_at: '2026-03-20T09:00:00.000Z'
+        }
+      ],
+      error: null
+    });
+    const eq = vi.fn(() => ({ order }));
+    const select = vi.fn(() => ({ eq }));
+    const from = vi.fn(() => ({ select }));
+
+    const repository = createPostRepository({ from } as never);
+    const posts = await repository.listPublicPosts();
+
+    expect(posts).toEqual([
+      {
+        id: 'post_public_1',
+        content: 'Approved post',
+        emotionTags: ['hope'],
+        createdAt: '2026-03-20T10:00:00.000Z'
+      }
     ]);
   });
 });

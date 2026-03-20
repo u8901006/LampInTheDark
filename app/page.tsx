@@ -25,6 +25,12 @@ export default function HomePage() {
           <Link className="primary-link" href="/write">
             匿名留言
           </Link>
+          <Link className="primary-link" href="/posts">
+            查看公開留言
+          </Link>
+          <Link className="primary-link" href="/my-post">
+            查詢我的留言
+          </Link>
           <span className="soft-note">不用註冊，送出後會顯示審核狀態。</span>
         </div>
         <ul style={{ margin: '2rem 0 0', paddingLeft: '1.25rem', lineHeight: 1.8 }}>

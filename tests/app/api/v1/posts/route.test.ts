@@ -23,6 +23,7 @@ describe('createPostRouteHandler', () => {
       throw new Error('Expected success response');
     }
     expect(response.data.status).toBe('MANUAL_REVIEW');
+    expect(response.data.trackingCode).toMatch(/^track_[a-f0-9]{16}$/i);
   });
 
   it('returns validation errors in unified format', async () => {
@@ -73,6 +74,7 @@ describe('createPostRouteHandler', () => {
 
     expect(savePost).toHaveBeenCalledWith(
       expect.objectContaining({
+        trackingCode: expect.stringMatching(/^track_[a-f0-9]{16}$/i),
         content: 'This is a valid persisted post.',
         moderationRuns: [expect.objectContaining({ provider: 'nvidia' })]
       })
