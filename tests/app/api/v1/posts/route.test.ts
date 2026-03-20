@@ -42,6 +42,7 @@ describe('createPostRouteHandler', () => {
       throw new Error('Expected error response');
     }
     expect(response.error.code).toBe('VALIDATION_ERROR');
+    expect(response.error.message).toBe('留言內容至少需要 10 個字。');
   });
 
   it('passes content and moderation runs to persistence layer', async () => {

@@ -72,11 +72,12 @@ export function createPostRouteHandler(dependencies: RouteDependencies) {
     const parsed = createPostSchema.safeParse(request);
 
     if (!parsed.success) {
+      const issue = parsed.error.issues[0];
       return {
         success: false,
         error: {
           code: 'VALIDATION_ERROR',
-          message: 'Request payload is invalid.'
+          message: toValidationMessage(issue)
         }
       };
     }
@@ -191,4 +192,24 @@ function coerceStatus(decision: ModerationDecision): PostStatus {
   }
 
   return 'MANUAL_REVIEW';
+}
+
+function toValidationMessage(issue: z.ZodIssue | undefined): string {
+  if (!issue) {
+    return 'Request payload is invalid.';
+  }
+
+  if (issue.path[0] === 'content' && issue.code === 'too_small') {
+    return '留言內容至少需要 10 個字。';
+  }
+
+  if (issue.path[0] === 'content' && issue.code === 'too_big') {
+    return '留言內容最多 2000 個字。';
+  }
+
+  if (issue.path[0] === 'emotionTags' && issue.code === 'too_small') {
+    return '請至少選擇一個情緒標籤。';
+  }
+
+  return 'Request payload is invalid.';
 }
