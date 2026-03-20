@@ -4,6 +4,7 @@ export type PostStatus = Extract<ModerationDecision, 'APPROVED' | 'REJECTED' | '
 
 export interface PersistedPost {
   id: string;
+  trackingCode: string;
   content: string;
   emotionTags: string[];
   deviceFingerprintHash: string;
@@ -17,6 +18,7 @@ export interface PersistedPost {
 
 export interface AdminQueueItem {
   id: string;
+  trackingCode?: string;
   content?: string;
   status: PostStatus;
   moderationPath: string;
@@ -31,6 +33,7 @@ const adminQueue: AdminQueueItem[] = [];
 export async function saveAdminQueueItem(item: PersistedPost): Promise<void> {
   adminQueue.push({
     id: item.id,
+    trackingCode: item.trackingCode,
     content: item.content,
     status: item.status,
     moderationPath: item.moderationPath,

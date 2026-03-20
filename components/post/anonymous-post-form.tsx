@@ -58,6 +58,7 @@ export function AnonymousPostForm() {
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [state, setState] = useState<ModerationState>('idle');
+  const [trackingCode, setTrackingCode] = useState<string | null>(null);
 
   const deviceFingerprintHash = useMemo(() => buildDeviceFingerprint(), []);
 
@@ -95,20 +96,23 @@ export function AnonymousPostForm() {
 
       const result = (await response.json()) as {
         success: boolean;
-        data?: { status: ModerationState };
+        data?: { status: ModerationState; trackingCode?: string };
       };
 
       if (!response.ok || !result.success || !result.data) {
         setState('ERROR');
+        setTrackingCode(null);
         return;
       }
 
       setState(result.data.status);
+      setTrackingCode(result.data.trackingCode ?? null);
       setContent('');
       setEmotionTags([]);
       setErrors({});
     } catch {
       setState('ERROR');
+      setTrackingCode(null);
     } finally {
       setIsSubmitting(false);
     }
@@ -139,7 +143,7 @@ export function AnonymousPostForm() {
         {isSubmitting ? '送出中...' : '送出匿名留言'}
       </button>
 
-      <SubmissionResult state={state} />
+      <SubmissionResult state={state} trackingCode={trackingCode} />
     </form>
   );
 }

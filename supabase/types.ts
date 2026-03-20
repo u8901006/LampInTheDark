@@ -1,5 +1,6 @@
 export interface PostRow {
   id: string;
+  tracking_code: string;
   content: string;
   emotion_tags: string[];
   device_fingerprint_hash: string;
