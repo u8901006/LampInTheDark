@@ -44,6 +44,7 @@ export interface ModerationRunRecord {
   latencyMs: number;
   errorCode: string | null;
   rawResponseRedacted: Record<string, unknown>;
+  createdAt?: string | null;
 }
 
 export interface ModerateInput {

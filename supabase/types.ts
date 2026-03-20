@@ -5,9 +5,17 @@ export interface PostRow {
   device_fingerprint_hash: string;
   status: 'APPROVED' | 'REJECTED' | 'CRISIS' | 'MANUAL_REVIEW';
   moderation_path: string;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+  review_note: string | null;
   created_at: string;
   updated_at: string;
   moderation_runs?: ModerationRunRow[];
+}
+
+export interface AdminUserRow {
+  user_id: string;
+  created_at: string;
 }
 
 export interface ModerationRunRow {

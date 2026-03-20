@@ -58,7 +58,7 @@ describe('createPostRepository', () => {
   });
 
   it('returns queue items from joined posts and moderation runs data', async () => {
-    const eq = vi.fn().mockResolvedValue({
+    const order = vi.fn().mockResolvedValue({
       data: [
         {
           id: 'post_123',
@@ -80,7 +80,6 @@ describe('createPostRepository', () => {
       ],
       error: null
     });
-    const order = vi.fn(() => ({ eq }));
     const select = vi.fn(() => ({ order }));
     const from = vi.fn(() => ({ select }));
 
@@ -88,7 +87,7 @@ describe('createPostRepository', () => {
     const queue = await repository.listAdminQueue();
 
     expect(queue).toEqual([
-      {
+      expect.objectContaining({
         id: 'post_123',
         status: 'MANUAL_REVIEW',
         moderationPath: 'nvidia->manual',
@@ -98,7 +97,7 @@ describe('createPostRepository', () => {
             decision: 'UNCERTAIN'
           })
         ]
-      }
+      })
     ]);
   });
 });
