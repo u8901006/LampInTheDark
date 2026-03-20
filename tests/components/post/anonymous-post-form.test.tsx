@@ -20,6 +20,15 @@ describe('anonymous post form behavior', () => {
     expect(errors.emotionTags).toBe('請至少選擇一個情緒標籤。');
   });
 
+  it('rejects content shorter than ten characters before submit', () => {
+    const errors = validateAnonymousPostInput({
+      content: 'short',
+      emotionTags: ['sadness']
+    });
+
+    expect(errors.content).toBe('留言內容至少需要 10 個字。');
+  });
+
   it('returns manual review and success messages in Traditional Chinese', () => {
     expect(getSubmissionMessage('MANUAL_REVIEW')).toBe('留言已收到，正在審核中。');
     expect(getSubmissionMessage('APPROVED')).toBe('留言已送出。');

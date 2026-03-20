@@ -22,6 +22,8 @@ export function validateAnonymousPostInput(input: AnonymousPostInput): Validatio
 
   if (!input.content.trim()) {
     errors.content = '請輸入留言內容。';
+  } else if (input.content.trim().length < 10) {
+    errors.content = '留言內容至少需要 10 個字。';
   }
 
   if (input.emotionTags.length === 0) {
