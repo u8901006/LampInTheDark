@@ -10,13 +10,20 @@ export interface PersistedPost {
   status: PostStatus;
   moderationPath: string;
   moderationRuns: ModerationRunRecord[];
+  reviewedAt?: string | null;
+  reviewedBy?: string | null;
+  reviewNote?: string | null;
 }
 
 export interface AdminQueueItem {
   id: string;
+  content?: string;
   status: PostStatus;
   moderationPath: string;
   moderationRuns: ModerationRunRecord[];
+  reviewedAt?: string | null;
+  reviewedBy?: string | null;
+  reviewNote?: string | null;
 }
 
 const adminQueue: AdminQueueItem[] = [];
@@ -24,9 +31,13 @@ const adminQueue: AdminQueueItem[] = [];
 export async function saveAdminQueueItem(item: PersistedPost): Promise<void> {
   adminQueue.push({
     id: item.id,
+    content: item.content,
     status: item.status,
     moderationPath: item.moderationPath,
-    moderationRuns: item.moderationRuns
+    moderationRuns: item.moderationRuns,
+    reviewedAt: item.reviewedAt ?? null,
+    reviewedBy: item.reviewedBy ?? null,
+    reviewNote: item.reviewNote ?? null
   });
 }
 

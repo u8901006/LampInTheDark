@@ -12,6 +12,9 @@ type PostRow = {
   device_fingerprint_hash: string;
   status: AdminQueueItem['status'];
   moderation_path: string;
+  reviewed_at?: string | null;
+  reviewed_by?: string | null;
+  review_note?: string | null;
   created_at?: string;
 };
 
@@ -28,6 +31,7 @@ type ModerationRunInsertRow = {
 };
 
 type ModerationRunSelectRow = Omit<ModerationRunInsertRow, 'post_id'>;
+type ModerationRunSelectWithTimestampRow = ModerationRunSelectRow & { created_at?: string | null };
 
 export function createPostRepository(supabase: MinimalSupabaseClient) {
   return {
@@ -50,24 +54,32 @@ export function createPostRepository(supabase: MinimalSupabaseClient) {
       }
     },
 
-    async listAdminQueue(): Promise<AdminQueueItem[]> {
+    async listAdminQueue(filters?: {
+      query?: string;
+      status?: string;
+      provider?: string;
+      decision?: string;
+    }): Promise<AdminQueueItem[]> {
       const { data, error } = await supabase
         .from('posts')
         .select(
-          'id,status,moderation_path,moderation_runs(provider,attempt_order,decision,confidence,reason_code,latency_ms,error_code,raw_response_redacted)'
+          'id,content,status,moderation_path,reviewed_at,reviewed_by,review_note,moderation_runs(provider,attempt_order,decision,confidence,reason_code,latency_ms,error_code,raw_response_redacted,created_at)'
         )
-        .order('created_at', { ascending: false })
-        .eq('status', 'MANUAL_REVIEW');
+        .order('created_at', { ascending: false });
 
       if (error) {
         throw error;
       }
 
-      return (data ?? []).map((row) => ({
+      const items = (data ?? []).map((row) => ({
         id: row.id,
+        content: row.content,
         status: row.status,
         moderationPath: row.moderation_path,
-        moderationRuns: ((row.moderation_runs ?? []) as ModerationRunSelectRow[]).map((run) => ({
+        reviewedAt: row.reviewed_at ?? null,
+        reviewedBy: row.reviewed_by ?? null,
+        reviewNote: row.review_note ?? null,
+        moderationRuns: ((row.moderation_runs ?? []) as ModerationRunSelectWithTimestampRow[]).map((run) => ({
           provider: run.provider,
           attemptOrder: run.attempt_order,
           decision: run.decision,
@@ -75,9 +87,48 @@ export function createPostRepository(supabase: MinimalSupabaseClient) {
           reasonCode: run.reason_code,
           latencyMs: run.latency_ms,
           errorCode: run.error_code,
-          rawResponseRedacted: run.raw_response_redacted
+          rawResponseRedacted: run.raw_response_redacted,
+          createdAt: run.created_at ?? null
         }))
       }));
+
+      return items.filter((item) => {
+        if (filters?.status && item.status !== filters.status) {
+          return false;
+        }
+        if (filters?.provider && !item.moderationRuns.some((run) => run.provider === filters.provider)) {
+          return false;
+        }
+        if (filters?.decision && !item.moderationRuns.some((run) => run.decision === filters.decision)) {
+          return false;
+        }
+        if (
+          filters?.query &&
+          !item.id.includes(filters.query) &&
+          !item.content?.toLowerCase().includes(filters.query.toLowerCase())
+        ) {
+          return false;
+        }
+        return true;
+      });
+    },
+
+    async updateModerationDecision(input: {
+      postId: string;
+      status: AdminQueueItem['status'];
+      reviewedBy: string;
+      reviewNote?: string | null;
+    }): Promise<void> {
+      const { error } = await supabase.from('posts').update({
+        status: input.status,
+        reviewed_at: new Date().toISOString(),
+        reviewed_by: input.reviewedBy,
+        review_note: input.reviewNote ?? null
+      }).eq('id', input.postId);
+
+      if (error) {
+        throw error;
+      }
     }
   };
 }
@@ -89,7 +140,10 @@ function toPostRow(post: PersistedPost): PostRow {
     emotion_tags: post.emotionTags,
     device_fingerprint_hash: post.deviceFingerprintHash,
     status: post.status,
-    moderation_path: post.moderationPath
+    moderation_path: post.moderationPath,
+    reviewed_at: post.reviewedAt ?? null,
+    reviewed_by: post.reviewedBy ?? null,
+    review_note: post.reviewNote ?? null
   };
 }
 
