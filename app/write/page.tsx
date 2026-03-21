@@ -16,6 +16,9 @@ export default function WritePage() {
         <p style={{ color: 'var(--muted)', lineHeight: 1.7, marginTop: '1rem' }}>
           送出後請保留查詢碼，之後可到 <Link href="/my-post">/my-post</Link> 查詢自己的留言。
         </p>
+        <p style={{ color: 'var(--muted)', lineHeight: 1.7, marginTop: '1rem' }}>
+          送出後會顯示完成卡片，你也可以回首頁或查看公開留言。
+        </p>
         <div style={{ marginTop: '2rem' }}>
           <AnonymousPostForm />
         </div>
