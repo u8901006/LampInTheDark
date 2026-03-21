@@ -39,7 +39,7 @@ export function getModerationConfig(env: RawEnv): ModerationConfig {
         name: 'nvidia',
         apiKey: env.NVIDIA_API_KEY,
         model: env.NVIDIA_MODERATION_MODEL,
-        timeoutMs: 2500
+        timeoutMs: 20000
       },
       fallback: {
         name: 'openrouter',

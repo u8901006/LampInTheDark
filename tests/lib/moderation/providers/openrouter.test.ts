@@ -11,7 +11,15 @@ describe('createModerateWithOpenRouter', () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
-      json: async () => ({ label: 'approved', confidence: 0.91, reason: 'safe' })
+      json: async () => ({
+        choices: [
+          {
+            message: {
+              content: '{"label":"approved","confidence":0.91,"reason":"safe"}'
+            }
+          }
+        ]
+      })
     });
 
     const moderateWithOpenRouter = createModerateWithOpenRouter({
@@ -23,6 +31,14 @@ describe('createModerateWithOpenRouter', () => {
     const result = await moderateWithOpenRouter({ content: 'test', traceId: 'trace-1', timeoutMs: 3500 });
 
     expect(result.provider).toBe('openrouter');
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://openrouter.ai/api/v1/chat/completions',
+      expect.objectContaining({ method: 'POST' })
+    );
+    expect(result.kind).toBe('decision');
+    if (result.kind !== 'decision') {
+      throw new Error('Expected decision result');
+    }
     expect(result.raw.decision).toBe('APPROVED');
   });
 });
