@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "moderation:report": "node scripts/moderation-success-report.mjs",
     "smoke": "node scripts/smoke-test.mjs",
     "start": "next start",
     "test": "vitest run"
