@@ -7,7 +7,7 @@ export function createModerateWithOpenRouter(options: {
 }) {
   return createProviderAdapter({
     ...options,
-    endpoint: 'https://openrouter.ai/api/v1/moderate',
+    endpoint: 'https://openrouter.ai/api/v1/chat/completions',
     provider: 'openrouter'
   });
 }

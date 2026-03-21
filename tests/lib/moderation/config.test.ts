@@ -13,7 +13,7 @@ describe('getModerationConfig', () => {
 
     expect(config.providers.primary.name).toBe('nvidia');
     expect(config.providers.fallback.name).toBe('openrouter');
-    expect(config.providers.primary.timeoutMs).toBe(2500);
+    expect(config.providers.primary.timeoutMs).toBe(20000);
     expect(config.providers.fallback.timeoutMs).toBe(3500);
   });
 });
