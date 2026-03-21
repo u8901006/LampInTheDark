@@ -17,6 +17,14 @@ interface AnonymousPostInput {
   emotionTags: string[];
 }
 
+interface ResetFormState {
+  content: string;
+  emotionTags: string[];
+  errors: ValidationErrors;
+  state: ModerationState;
+  trackingCode: string | null;
+}
+
 export function validateAnonymousPostInput(input: AnonymousPostInput): ValidationErrors {
   const errors: ValidationErrors = {};
 
@@ -28,6 +36,8 @@ export function validateAnonymousPostInput(input: AnonymousPostInput): Validatio
 
   if (input.emotionTags.length === 0) {
     errors.emotionTags = '請至少選擇一個情緒標籤。';
+  } else if (input.emotionTags.length > 5) {
+    errors.emotionTags = '最多只能選擇 5 個情緒標籤。';
   }
 
   return errors;
@@ -44,6 +54,32 @@ export function getSubmissionMessage(state: Exclude<ModerationState, 'idle'>): s
     default:
       return '送出失敗，請稍後再試。';
   }
+}
+
+export function shouldShowCompletionState(state: ModerationState): boolean {
+  return state === 'APPROVED' || state === 'MANUAL_REVIEW' || state === 'CRISIS';
+}
+
+export function getResetFormState(): ResetFormState {
+  return {
+    content: '',
+    emotionTags: [],
+    errors: {},
+    state: 'idle',
+    trackingCode: null
+  };
+}
+
+export function getNextEmotionTags(current: string[], tag: string): string[] {
+  if (current.includes(tag)) {
+    return current.filter((item) => item !== tag);
+  }
+
+  if (current.length >= 5) {
+    return current;
+  }
+
+  return [...current, tag];
 }
 
 function buildDeviceFingerprint(): string {
@@ -65,9 +101,11 @@ export function AnonymousPostForm() {
   const deviceFingerprintHash = useMemo(() => buildDeviceFingerprint(), []);
 
   const toggleTag = (tag: string) => {
-    setEmotionTags((current) =>
-      current.includes(tag) ? current.filter((item) => item !== tag) : [...current, tag]
-    );
+    if (isSubmitting) {
+      return;
+    }
+
+    setEmotionTags((current) => getNextEmotionTags(current, tag));
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -120,6 +158,19 @@ export function AnonymousPostForm() {
     }
   };
 
+  const resetForm = () => {
+    const nextState = getResetFormState();
+    setContent(nextState.content);
+    setEmotionTags(nextState.emotionTags);
+    setErrors(nextState.errors);
+    setState(nextState.state);
+    setTrackingCode(nextState.trackingCode);
+  };
+
+  if (shouldShowCompletionState(state)) {
+    return <SubmissionResult state={state} trackingCode={trackingCode} onReset={resetForm} />;
+  }
+
   return (
     <form className="write-form" onSubmit={handleSubmit}>
       <label className="field-label" htmlFor="content">
@@ -129,6 +180,7 @@ export function AnonymousPostForm() {
         id="content"
         className="text-area"
         value={content}
+        disabled={isSubmitting}
         onChange={(event) => setContent(event.target.value)}
         placeholder="把你想說的話留在這裡。"
         rows={8}
@@ -137,7 +189,7 @@ export function AnonymousPostForm() {
 
       <div>
         <p className="field-label">情緒標籤</p>
-        <EmotionTagSelector selectedTags={emotionTags} onToggle={toggleTag} />
+        <EmotionTagSelector selectedTags={emotionTags} onToggle={toggleTag} disabled={isSubmitting} />
         {errors.emotionTags ? <p className="field-error">{errors.emotionTags}</p> : null}
       </div>
 

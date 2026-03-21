@@ -17,5 +17,7 @@ describe('public anonymous write UI', () => {
     expect(write).toContain('匿名留言');
     expect(write).toContain('你的內容會先進行審核');
     expect(write).toContain('/my-post');
+    expect(write).toContain('送出後會顯示完成卡片');
+    expect(write).toContain('你也可以回首頁或查看公開留言');
   });
 });
