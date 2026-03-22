@@ -8,7 +8,7 @@ describe('getAdminQueue', () => {
       {
         id: 'post-1',
         status: 'MANUAL_REVIEW',
-        moderationPath: 'nvidia->openrouter->manual',
+        moderationPath: 'nvidia->zhipu->manual',
         moderationRuns: []
       }
     ]);
@@ -47,7 +47,7 @@ describe('getAdminQueue', () => {
       {
         id: 'post-3',
         status: 'MANUAL_REVIEW',
-        moderationPath: 'nvidia->openrouter->manual',
+        moderationPath: 'nvidia->zhipu->manual',
         moderationRuns: []
       }
     ])();
@@ -82,8 +82,8 @@ describe('getAdminQueue', () => {
         id: 'post-7',
         content: 'no-match',
         status: 'MANUAL_REVIEW',
-        moderationPath: 'openrouter->manual',
-        moderationRuns: [{ provider: 'openrouter', attemptOrder: 1, decision: 'APPROVED', confidence: 0.9, reasonCode: 'safe', latencyMs: 10, errorCode: null, rawResponseRedacted: {} }]
+        moderationPath: 'zhipu->manual',
+        moderationRuns: [{ provider: 'zhipu', attemptOrder: 1, decision: 'APPROVED', confidence: 0.9, reasonCode: 'safe', latencyMs: 10, errorCode: null, rawResponseRedacted: {} }]
       }
     ])(new Request('http://localhost/api/v1/admin/queue?provider=nvidia&decision=ERROR'));
 

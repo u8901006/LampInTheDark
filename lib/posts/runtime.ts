@@ -2,7 +2,7 @@ import { getServerEnv, type EnvSource } from '@/lib/env';
 import { getModerationConfig } from '@/lib/moderation/config';
 import { createModerationOrchestrator } from '@/lib/moderation/orchestrator';
 import { createModerateWithNvidia } from '@/lib/moderation/providers/nvidia';
-import { createModerateWithOpenRouter } from '@/lib/moderation/providers/openrouter';
+import { createModerateWithZhipu } from '@/lib/moderation/providers/zhipu';
 import { createPostRepository } from '@/lib/posts/repository';
 import { createSupabaseServerClients } from '@/lib/supabase/server';
 
@@ -17,15 +17,15 @@ export function createRuntimePostDependencies(envSource?: EnvSource) {
   const moderationConfig = getModerationConfig({
     NVIDIA_API_KEY: env.moderation.nvidiaApiKey,
     NVIDIA_MODERATION_MODEL: env.moderation.nvidiaModel,
-    OPENROUTER_API_KEY: env.moderation.openRouterApiKey,
-    OPENROUTER_MODEL: env.moderation.openRouterModel,
+    ZHIPU_API_KEY: env.moderation.zhipuApiKey,
+    ZHIPU_MODERATION_MODEL: env.moderation.zhipuModel,
     MODERATION_FALLBACK_ENABLED: 'true'
   });
   const moderateWithNvidia = createModerateWithNvidia({
     apiKey: moderationConfig.providers.primary.apiKey,
     model: moderationConfig.providers.primary.model
   });
-  const moderateWithOpenRouter = createModerateWithOpenRouter({
+  const moderateWithZhipu = createModerateWithZhipu({
     apiKey: moderationConfig.providers.fallback.apiKey,
     model: moderationConfig.providers.fallback.model
   });
@@ -33,8 +33,8 @@ export function createRuntimePostDependencies(envSource?: EnvSource) {
     providers: {
       nvidia: (input) =>
         moderateWithNvidia({ ...input, timeoutMs: moderationConfig.providers.primary.timeoutMs }),
-      openrouter: (input) =>
-        moderateWithOpenRouter({ ...input, timeoutMs: moderationConfig.providers.fallback.timeoutMs })
+      zhipu: (input) =>
+        moderateWithZhipu({ ...input, timeoutMs: moderationConfig.providers.fallback.timeoutMs })
     }
   }).moderate;
 

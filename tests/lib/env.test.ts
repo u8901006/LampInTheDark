@@ -11,13 +11,14 @@ describe('env helpers', () => {
       SUPABASE_SERVICE_ROLE_KEY: 'service-role-key',
       NVIDIA_API_KEY: 'nvidia-key',
       NVIDIA_MODERATION_MODEL: 'nvidia/model',
-      OPENROUTER_API_KEY: 'openrouter-key',
-      OPENROUTER_MODEL: 'openrouter/model'
+      ZHIPU_API_KEY: 'zhipu-key',
+      ZHIPU_MODERATION_MODEL: 'glm-5-turbo'
     });
 
     expect(env.supabase.url).toBe('https://example.supabase.co');
     expect(env.supabase.serviceRoleKey).toBe('service-role-key');
     expect(env.moderation.nvidiaApiKey).toBe('nvidia-key');
+    expect(env.moderation.zhipuApiKey).toBe('zhipu-key');
   });
 
   it('returns only public env values for the client', () => {
@@ -40,8 +41,8 @@ describe('env helpers', () => {
     expect(envExample).toContain('SUPABASE_SERVICE_ROLE_KEY');
     expect(envExample).toContain('NVIDIA_API_KEY');
     expect(envExample).toContain('NVIDIA_MODERATION_MODEL');
-    expect(envExample).toContain('OPENROUTER_API_KEY');
-    expect(envExample).toContain('OPENROUTER_MODEL');
+    expect(envExample).toContain('ZHIPU_API_KEY');
+    expect(envExample).toContain('ZHIPU_MODERATION_MODEL');
     expect(envExample).toContain('MODERATION_FALLBACK_ENABLED');
   });
 });

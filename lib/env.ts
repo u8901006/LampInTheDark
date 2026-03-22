@@ -12,8 +12,8 @@ export interface ServerEnv {
   moderation: {
     nvidiaApiKey: string;
     nvidiaModel: string;
-    openRouterApiKey: string;
-    openRouterModel: string;
+    zhipuApiKey: string;
+    zhipuModel: string;
   };
 }
 
@@ -23,8 +23,8 @@ export interface EnvSource {
   SUPABASE_SERVICE_ROLE_KEY?: string;
   NVIDIA_API_KEY?: string;
   NVIDIA_MODERATION_MODEL?: string;
-  OPENROUTER_API_KEY?: string;
-  OPENROUTER_MODEL?: string;
+  ZHIPU_API_KEY?: string;
+  ZHIPU_MODERATION_MODEL?: string;
 }
 
 export function getPublicEnv(env: EnvSource): PublicEnv {
@@ -49,8 +49,8 @@ export function getServerEnv(env: EnvSource): ServerEnv {
     throw new Error('Missing NVIDIA moderation environment variables');
   }
 
-  if (!env.OPENROUTER_API_KEY || !env.OPENROUTER_MODEL) {
-    throw new Error('Missing OpenRouter moderation environment variables');
+  if (!env.ZHIPU_API_KEY) {
+    throw new Error('Missing Zhipu moderation environment variables');
   }
 
   return {
@@ -62,8 +62,8 @@ export function getServerEnv(env: EnvSource): ServerEnv {
     moderation: {
       nvidiaApiKey: env.NVIDIA_API_KEY,
       nvidiaModel: env.NVIDIA_MODERATION_MODEL,
-      openRouterApiKey: env.OPENROUTER_API_KEY,
-      openRouterModel: env.OPENROUTER_MODEL
+      zhipuApiKey: env.ZHIPU_API_KEY,
+      zhipuModel: env.ZHIPU_MODERATION_MODEL || 'glm-5-turbo'
     }
   };
 }

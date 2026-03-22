@@ -1,4 +1,4 @@
-export type ProviderName = 'nvidia' | 'openrouter';
+export type ProviderName = 'nvidia' | 'zhipu';
 
 export type ModerationDecision =
   | 'APPROVED'

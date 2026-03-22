@@ -3,8 +3,8 @@ import type { ProviderName } from '@/lib/moderation/types';
 interface RawEnv {
   NVIDIA_API_KEY?: string;
   NVIDIA_MODERATION_MODEL?: string;
-  OPENROUTER_API_KEY?: string;
-  OPENROUTER_MODEL?: string;
+  ZHIPU_API_KEY?: string;
+  ZHIPU_MODERATION_MODEL?: string;
   MODERATION_FALLBACK_ENABLED?: string;
 }
 
@@ -28,8 +28,8 @@ export function getModerationConfig(env: RawEnv): ModerationConfig {
     throw new Error('Missing NVIDIA moderation configuration');
   }
 
-  if (!env.OPENROUTER_API_KEY || !env.OPENROUTER_MODEL) {
-    throw new Error('Missing OpenRouter moderation configuration');
+  if (!env.ZHIPU_API_KEY) {
+    throw new Error('Missing Zhipu moderation configuration');
   }
 
   return {
@@ -42,10 +42,10 @@ export function getModerationConfig(env: RawEnv): ModerationConfig {
         timeoutMs: 20000
       },
       fallback: {
-        name: 'openrouter',
-        apiKey: env.OPENROUTER_API_KEY,
-        model: env.OPENROUTER_MODEL,
-        timeoutMs: 3500
+        name: 'zhipu',
+        apiKey: env.ZHIPU_API_KEY,
+        model: env.ZHIPU_MODERATION_MODEL || 'glm-5-turbo',
+        timeoutMs: 15000
       }
     }
   };

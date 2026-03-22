@@ -11,14 +11,14 @@ type ProviderFn = (input: ModerateInput) => Promise<ProviderModerationResult>;
 interface OrchestratorDependencies {
   providers: {
     nvidia: ProviderFn;
-    openrouter: ProviderFn;
+    zhipu: ProviderFn;
   };
 }
 
 export function createModerationOrchestrator(dependencies: OrchestratorDependencies) {
   const breakers = {
     nvidia: new ProviderCircuitBreaker({ failureThreshold: 5, cooldownMs: 60000 }),
-    openrouter: new ProviderCircuitBreaker({ failureThreshold: 5, cooldownMs: 60000 })
+    zhipu: new ProviderCircuitBreaker({ failureThreshold: 5, cooldownMs: 60000 })
   };
 
   return {
@@ -49,19 +49,19 @@ export function createModerationOrchestrator(dependencies: OrchestratorDependenc
         }
       }
 
-      const openRouterAllowed = breakers.openrouter.canRequest();
-      if (openRouterAllowed) {
-        const result = await dependencies.providers.openrouter(input);
-        path.push('openrouter');
+      const zhipuAllowed = breakers.zhipu.canRequest();
+      if (zhipuAllowed) {
+        const result = await dependencies.providers.zhipu(input);
+        path.push('zhipu');
         runs.push(toRunRecord(result, runs.length + 1));
 
         if (result.kind === 'technical_failure') {
-          breakers.openrouter.recordFailure();
+          breakers.zhipu.recordFailure();
           path.push('manual');
           return { finalDecision: 'MANUAL_REVIEW', path: path.join('->'), runs };
         }
 
-        breakers.openrouter.recordSuccess();
+        breakers.zhipu.recordSuccess();
         const decision = resolveFinalDecision(result.raw.decision);
         if (decision === 'MANUAL_REVIEW') {
           path.push('manual');

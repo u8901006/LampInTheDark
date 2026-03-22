@@ -4,7 +4,7 @@ import type { ModerationMetrics } from '@/lib/admin/metrics';
 export function MetricsCards({ metrics }: { metrics: ModerationMetrics }) {
   const cards = [
     ['NVIDIA', String(metrics.providerCounts.nvidia)],
-    ['OpenRouter', String(metrics.providerCounts.openrouter)],
+    ['Zhipu', String(metrics.providerCounts.zhipu)],
     ['成功率', `${Math.round(metrics.successRate * 100)}%`],
     ['平均延遲', `${metrics.averageLatencyMs}ms`],
     ['人工審核比例', `${Math.round(metrics.manualReviewRatio * 100)}%`],

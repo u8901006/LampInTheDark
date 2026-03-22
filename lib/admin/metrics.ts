@@ -1,7 +1,7 @@
 import type { AdminQueueItem } from '@/lib/posts/store';
 
 export interface ModerationMetrics {
-  providerCounts: Record<'nvidia' | 'openrouter', number>;
+  providerCounts: Record<'nvidia' | 'zhipu', number>;
   successRate: number;
   averageLatencyMs: number;
   manualReviewRatio: number;
@@ -20,7 +20,7 @@ export function computeModerationMetrics(
     .filter((run) => !run.createdAt || new Date(run.createdAt).getTime() >= cutoff);
   const providerCounts = {
     nvidia: runs.filter((run) => run.provider === 'nvidia').length,
-    openrouter: runs.filter((run) => run.provider === 'openrouter').length
+    zhipu: runs.filter((run) => run.provider === 'zhipu').length
   };
   const windowedItems = items.filter((item) =>
     item.moderationRuns.some((run) => !run.createdAt || new Date(run.createdAt).getTime() >= cutoff)

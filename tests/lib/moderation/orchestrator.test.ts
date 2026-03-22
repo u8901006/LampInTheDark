@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { createModerationOrchestrator } from '@/lib/moderation/orchestrator';
 
 describe('createModerationOrchestrator', () => {
-  it('falls back to OpenRouter when NVIDIA fails technically', async () => {
+  it('falls back to Zhipu when NVIDIA fails technically', async () => {
     const orchestrator = createModerationOrchestrator({
       providers: {
         nvidia: vi.fn().mockResolvedValue({
@@ -12,8 +12,8 @@ describe('createModerationOrchestrator', () => {
           errorCode: 'TIMEOUT',
           latencyMs: 2500
         }),
-        openrouter: vi.fn().mockResolvedValue({
-          provider: 'openrouter',
+        zhipu: vi.fn().mockResolvedValue({
+          provider: 'zhipu',
           kind: 'decision',
           raw: {
             decision: 'APPROVED',
@@ -29,7 +29,7 @@ describe('createModerationOrchestrator', () => {
     const result = await orchestrator.moderate({ content: 'hello', traceId: 'trace-1' });
 
     expect(result.finalDecision).toBe('APPROVED');
-    expect(result.path).toBe('nvidia->openrouter');
+    expect(result.path).toBe('nvidia->zhipu');
     expect(result.runs).toHaveLength(2);
   });
 
@@ -47,7 +47,7 @@ describe('createModerationOrchestrator', () => {
           },
           latencyMs: 1000
         }),
-        openrouter: vi.fn()
+        zhipu: vi.fn()
       }
     });
 
@@ -71,7 +71,7 @@ describe('createModerationOrchestrator', () => {
           },
           latencyMs: 700
         }),
-        openrouter: vi.fn()
+        zhipu: vi.fn()
       }
     });
 
@@ -79,5 +79,29 @@ describe('createModerationOrchestrator', () => {
 
     expect(result.finalDecision).toBe('CRISIS');
     expect(result.path).toBe('nvidia');
+  });
+
+  it('falls back to manual review when both providers fail', async () => {
+    const orchestrator = createModerationOrchestrator({
+      providers: {
+        nvidia: vi.fn().mockResolvedValue({
+          provider: 'nvidia',
+          kind: 'technical_failure',
+          errorCode: 'TIMEOUT',
+          latencyMs: 2500
+        }),
+        zhipu: vi.fn().mockResolvedValue({
+          provider: 'zhipu',
+          kind: 'technical_failure',
+          errorCode: 'HTTP_429',
+          latencyMs: 500
+        })
+      }
+    });
+
+    const result = await orchestrator.moderate({ content: 'hello', traceId: 'trace-4' });
+
+    expect(result.finalDecision).toBe('MANUAL_REVIEW');
+    expect(result.path).toBe('nvidia->zhipu->manual');
   });
 });

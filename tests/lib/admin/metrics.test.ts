@@ -19,13 +19,13 @@ describe('computeModerationMetrics', () => {
         moderationPath: 'nvidia',
         moderationRuns: [
           { provider: 'nvidia', attemptOrder: 1, decision: 'APPROVED', confidence: 0.9, reasonCode: 'safe', latencyMs: 50, errorCode: null, rawResponseRedacted: {} },
-          { provider: 'openrouter', attemptOrder: 2, decision: 'REJECTED', confidence: 0.8, reasonCode: 'unsafe', latencyMs: 70, errorCode: null, rawResponseRedacted: {} }
+          { provider: 'zhipu', attemptOrder: 2, decision: 'REJECTED', confidence: 0.8, reasonCode: 'unsafe', latencyMs: 70, errorCode: null, rawResponseRedacted: {} }
         ]
       }
     ]);
 
     expect(metrics.providerCounts.nvidia).toBe(2);
-    expect(metrics.providerCounts.openrouter).toBe(1);
+    expect(metrics.providerCounts.zhipu).toBe(1);
     expect(metrics.errorCount).toBe(1);
     expect(metrics.averageLatencyMs).toBe(73);
     expect(metrics.manualReviewRatio).toBe(0.5);
@@ -40,7 +40,7 @@ describe('computeModerationMetrics', () => {
           moderationPath: 'nvidia->manual',
           moderationRuns: [
             { provider: 'nvidia', attemptOrder: 1, decision: 'ERROR', confidence: null, reasonCode: null, latencyMs: 100, errorCode: 'TIMEOUT', rawResponseRedacted: {}, createdAt: '2026-03-20T00:00:00.000Z' },
-            { provider: 'openrouter', attemptOrder: 2, decision: 'APPROVED', confidence: 0.8, reasonCode: 'safe', latencyMs: 50, errorCode: null, rawResponseRedacted: {}, createdAt: '2026-03-10T00:00:00.000Z' }
+            { provider: 'zhipu', attemptOrder: 2, decision: 'APPROVED', confidence: 0.8, reasonCode: 'safe', latencyMs: 50, errorCode: null, rawResponseRedacted: {}, createdAt: '2026-03-10T00:00:00.000Z' }
           ]
         }
       ],
@@ -48,7 +48,7 @@ describe('computeModerationMetrics', () => {
     );
 
     expect(metrics.providerCounts.nvidia).toBe(1);
-    expect(metrics.providerCounts.openrouter).toBe(0);
+    expect(metrics.providerCounts.zhipu).toBe(0);
     expect(metrics.averageLatencyMs).toBe(100);
     expect(metrics.manualReviewRatio).toBe(1);
   });

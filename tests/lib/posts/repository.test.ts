@@ -21,7 +21,7 @@ describe('createPostRepository', () => {
       emotionTags: ['hope'],
       deviceFingerprintHash: 'device_hash',
       status: 'MANUAL_REVIEW',
-      moderationPath: 'nvidia->openrouter->manual',
+      moderationPath: 'nvidia->zhipu->manual',
       moderationRuns: [
         {
           provider: 'nvidia',
@@ -43,7 +43,7 @@ describe('createPostRepository', () => {
         id: 'post_123',
         tracking_code: 'track_123',
         status: 'MANUAL_REVIEW',
-        moderation_path: 'nvidia->openrouter->manual'
+        moderation_path: 'nvidia->zhipu->manual'
       })
     );
     expect(insert).toHaveBeenNthCalledWith(

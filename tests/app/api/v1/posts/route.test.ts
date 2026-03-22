@@ -7,7 +7,7 @@ describe('createPostRouteHandler', () => {
     const handler = createPostRouteHandler({
       moderate: vi.fn().mockResolvedValue({
         finalDecision: 'MANUAL_REVIEW',
-        path: 'nvidia->openrouter->manual',
+        path: 'nvidia->zhipu->manual',
         runs: []
       })
     });

@@ -1,13 +1,13 @@
 import { createProviderAdapter } from '@/lib/moderation/providers/shared';
 
-export function createModerateWithOpenRouter(options: {
+export function createModerateWithZhipu(options: {
   apiKey: string;
   model: string;
   fetchImpl?: typeof fetch;
 }) {
   return createProviderAdapter({
     ...options,
-    endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-    provider: 'openrouter'
+    endpoint: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
+    provider: 'zhipu'
   });
 }
