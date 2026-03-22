@@ -1,0 +1,9 @@
+Sound Bath Audio Attribution
+================================
+
+The singing bowl sounds used in this application are from:
+
+Kasper - Singing Bowls
+https://kasper.bandcamp.com/album/singing-bowls
+
+Used under license for this project.
