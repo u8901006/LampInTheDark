@@ -168,7 +168,7 @@ export function AnonymousPostForm() {
   };
 
   if (shouldShowCompletionState(state)) {
-    return <SubmissionResult state={state} trackingCode={trackingCode} onReset={resetForm} />;
+    return <SubmissionResult state={state} trackingCode={trackingCode} content={content} onReset={resetForm} />;
   }
 
   return (

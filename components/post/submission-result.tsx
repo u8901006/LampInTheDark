@@ -1,14 +1,50 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { ModerationState } from '@/components/post/anonymous-post-form';
+
+interface RecommendedArticle {
+  title: string;
+  url: string;
+  source: 'map' | 'search' | 'fallback';
+}
 
 interface SubmissionResultProps {
   state: ModerationState;
   trackingCode?: string | null;
+  content?: string;
   onReset?: () => void;
 }
 
-export function SubmissionResult({ state, trackingCode, onReset }: SubmissionResultProps) {
+export function SubmissionResult({ state, trackingCode, content, onReset }: SubmissionResultProps) {
+  const [article, setArticle] = useState<RecommendedArticle | null>(null);
+
+  useEffect(() => {
+    if (state !== 'APPROVED' && state !== 'MANUAL_REVIEW') {
+      return;
+    }
+
+    if (!content || content.trim().length < 10) {
+      return;
+    }
+
+    fetch('/api/v1/recommendations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.title && data.url) {
+          setArticle(data);
+        }
+      })
+      .catch(() => {
+        setArticle(null);
+      });
+  }, [state, content]);
+
   if (state === 'idle') {
     return null;
   }
@@ -42,6 +78,26 @@ export function SubmissionResult({ state, trackingCode, onReset }: SubmissionRes
         <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '1rem', padding: '1rem' }}>
           <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--muted)' }}>查詢碼</p>
           <p style={{ margin: '0.5rem 0 0', fontSize: '1.1rem', fontWeight: 700 }}>{trackingCode}</p>
+        </div>
+      ) : null}
+
+      {article ? (
+        <div style={{ background: 'linear-gradient(135deg, rgba(102,126,234,0.15) 0%, rgba(118,75,162,0.15) 100%)', borderRadius: '1rem', padding: '1rem' }}>
+          <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--muted)' }}>這篇文章可能對你有幫助</p>
+          <a
+            href={article.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'block',
+              margin: '0.5rem 0 0',
+              color: 'var(--accent)',
+              textDecoration: 'underline',
+              lineHeight: 1.5,
+            }}
+          >
+            {article.title}
+          </a>
         </div>
       ) : null}
 
