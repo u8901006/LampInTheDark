@@ -3,7 +3,10 @@ import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
   test: {
-    environment: 'node'
+    environment: 'node',
+    include: ['tests/**/*.test.{ts,tsx}'],
+    exclude: ['.worktrees/**', 'node_modules/**', '.next/**'],
+    passWithNoTests: true
   },
   resolve: {
     alias: {
