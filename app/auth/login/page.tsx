@@ -17,16 +17,33 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
-      setError(error.message);
+      if (error) {
+        setError(error.message);
+        return;
+      }
+
+      const accessToken = data.session?.access_token;
+      const response = await fetch('/api/auth/profile', {
+        method: 'POST',
+        headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+      });
+      if (!response.ok) {
+        const result = await response.json().catch(() => null);
+        setError(result?.error ?? '登入成功，但個人資料初始化失敗');
+        await supabase.auth.signOut();
+        return;
+      }
+
+      window.location.assign('/dashboard');
+    } catch {
+      setError('登入失敗，請稍後再試');
+    } finally {
       setLoading(false);
-      return;
     }
-
-    router.push('/dashboard');
   }
 
   return (

@@ -17,29 +17,35 @@ export interface EnvSource {
   SUPABASE_SERVICE_ROLE_KEY?: string;
 }
 
-export function getPublicEnv(env: EnvSource): PublicEnv {
-  if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    throw new Error('Missing public Supabase environment variables');
+function readRequiredEnv(value: string | undefined, errorMessage: string): string {
+  const normalized = value?.trim();
+  if (!normalized) {
+    throw new Error(errorMessage);
   }
+  return normalized;
+}
 
+export function getPublicEnv(env: EnvSource): PublicEnv {
   return {
-    supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
-    supabaseAnonKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    supabaseUrl: readRequiredEnv(
+      env.NEXT_PUBLIC_SUPABASE_URL,
+      'Missing public Supabase environment variables'
+    ),
+    supabaseAnonKey: readRequiredEnv(
+      env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      'Missing public Supabase environment variables'
+    )
   };
 }
 
 export function getServerEnv(env: EnvSource): ServerEnv {
   const publicEnv = getPublicEnv(env);
 
-  if (!env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('Missing SUPABASE_SERVICE_ROLE_KEY');
-  }
-
   return {
     supabase: {
       url: publicEnv.supabaseUrl,
       anonKey: publicEnv.supabaseAnonKey,
-      serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY
+      serviceRoleKey: readRequiredEnv(env.SUPABASE_SERVICE_ROLE_KEY, 'Missing SUPABASE_SERVICE_ROLE_KEY')
     }
   };
 }

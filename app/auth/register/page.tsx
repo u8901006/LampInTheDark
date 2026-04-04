@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { buildAuthCallbackUrl } from '@/lib/auth/url';
 import { createClient } from '@/lib/supabase/client';
 
 export default function RegisterPage() {
@@ -34,7 +35,10 @@ export default function RegisterPage() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { display_name: displayName } },
+      options: {
+        data: { display_name: displayName },
+        emailRedirectTo: buildAuthCallbackUrl(window.location.origin),
+      },
     });
 
     if (error) {
@@ -43,7 +47,7 @@ export default function RegisterPage() {
       return;
     }
 
-    router.push('/dashboard');
+    router.push('/auth/login');
   }
 
   return (
