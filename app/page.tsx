@@ -1,11 +1,4 @@
-import React from 'react';
 import Link from 'next/link';
-
-const moderationSteps = [
-  '匿名送出內容，不需註冊或登入',
-  '內容會先經過系統審核，再決定是否公開顯示',
-  '當系統無法確定時，內容會進入人工審核'
-];
 
 export default function HomePage() {
   return (
@@ -14,30 +7,25 @@ export default function HomePage() {
         <p style={{ color: 'var(--muted)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
           LampInTheDark
         </p>
-        <h1 style={{ fontSize: 'clamp(2.5rem, 7vw, 4.8rem)', margin: '0.5rem 0 1rem' }}>
-          一個讓你安心留下匿名心聲的地方。
+        <h1 style={{ fontSize: 'clamp(2rem, 6vw, 3.5rem)', margin: '0.5rem 0 1rem' }}>
+          DBT-PTSD 電子日誌卡
         </h1>
         <p style={{ fontSize: '1.1rem', lineHeight: 1.7, maxWidth: '42rem', color: 'var(--muted)' }}>
-          你可以在這裡用繁體中文留下匿名留言。系統會先進行審核，必要時轉交人工確認，
-          盡量在保護安全的前提下，保留每一段需要被看見的內容。
+          這是一個供案主填寫 DBT-PTSD 治療日誌的數位平台。
+          你可以記錄每週與每日的情緒、行為和治療進展，
+          也可以管理緊急聯絡計劃、生命歷程圖和睡眠日記。
         </p>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '2rem' }}>
-          <Link className="primary-link" href="/write">
-            匿名留言
+          <Link className="primary-link" href="/auth/login">
+            案主登入
           </Link>
-          <Link className="primary-link" href="/posts">
-            查看公開留言
+          <Link className="primary-link" href="/admin/login" style={{ background: 'var(--muted)' }}>
+            治療師登入
           </Link>
-          <Link className="primary-link" href="/my-post">
-            查詢我的留言
-          </Link>
-          <span className="soft-note">不用註冊，送出後會顯示審核狀態。</span>
         </div>
-        <ul style={{ margin: '2rem 0 0', paddingLeft: '1.25rem', lineHeight: 1.8 }}>
-          {moderationSteps.map((step) => (
-            <li key={step}>{step}</li>
-          ))}
-        </ul>
+        <p className="soft-note" style={{ marginTop: '1.5rem' }}>
+          還沒有帳號？<Link href="/auth/register" style={{ color: 'var(--accent)', fontWeight: 700 }}>註冊新帳號</Link>
+        </p>
       </section>
     </main>
   );

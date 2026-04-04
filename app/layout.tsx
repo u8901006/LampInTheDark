@@ -1,23 +1,16 @@
 import type { Metadata } from 'next';
-
-import { SoundBathProvider } from '@/components/sound-bath/sound-bath-context';
-import { FloatingPlayer } from '@/components/sound-bath/floating-player';
-
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'LampInTheDark',
-  description: 'Anonymous trauma-support posting platform with resilient AI moderation.'
+  title: 'LampInTheDark - DBT-PTSD 電子日誌卡',
+  description: 'DBT-PTSD 治療日誌卡電子化平台，供案主記錄每日與每週的治療進展。'
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="zh-Hant">
       <body>
-        <SoundBathProvider>
-          {children}
-          <FloatingPlayer />
-        </SoundBathProvider>
+        {children}
       </body>
     </html>
   );

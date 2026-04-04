@@ -1,75 +1,28 @@
-insert into posts (
-  id,
-  content,
-  emotion_tags,
-  device_fingerprint_hash,
-  status,
-  moderation_path
-) values
-  (
-    'post_seed_manual_001',
-    'I felt overwhelmed this week, but writing this down helped me slow my thoughts.',
-    array['anxiety', 'hope'],
-    'seed_device_hash_manual',
-    'MANUAL_REVIEW',
-    'nvidia->openrouter->manual'
-  ),
-  (
-    'post_seed_approved_001',
-    'Today I found a small moment of calm while walking home after therapy.',
-    array['relief'],
-    'seed_device_hash_approved',
-    'APPROVED',
-    'nvidia'
-  )
-on conflict (id) do nothing;
+-- ============================================================
+-- Seed data for DBT-PTSD Diary Card System
+-- ============================================================
 
-insert into moderation_runs (
-  post_id,
-  provider,
-  model,
-  attempt_order,
-  decision,
-  confidence,
-  reason_code,
-  latency_ms,
-  error_code,
-  raw_response_redacted
-) values
-  (
-    'post_seed_manual_001',
-    'nvidia',
-    'seed-nvidia-model',
-    1,
-    'ERROR',
-    null,
-    null,
-    2500,
-    'TIMEOUT',
-    '{}'::jsonb
-  ),
-  (
-    'post_seed_manual_001',
-    'openrouter',
-    'seed-openrouter-model',
-    2,
-    'UNCERTAIN',
-    0.41,
-    'ambiguous_content',
-    1330,
-    null,
-    '{"label":"uncertain"}'::jsonb
-  ),
-  (
-    'post_seed_approved_001',
-    'nvidia',
-    'seed-nvidia-model',
-    1,
-    'APPROVED',
-    0.96,
-    'safe',
-    320,
-    null,
-    '{"label":"approved"}'::jsonb
-  )
-on conflict do nothing;
+-- Note: Supabase Auth users must be created via the API or CLI
+-- This seed file assumes users are created separately
+
+-- Therapist profile (create auth user first via Supabase dashboard)
+-- Email: therapist@example.com, Password: therapist123
+-- Then insert profile manually:
+-- INSERT INTO public.profiles (id, role, display_name)
+-- VALUES ('<therapist-user-id>', 'therapist', '治療師');
+
+-- Sample client profile (create auth user first)
+-- Email: client@example.com, Password: client1234
+-- INSERT INTO public.profiles (id, role, display_name)
+-- VALUES ('<client-user-id>', 'client', '小明');
+
+-- The handle_new_user trigger will auto-create profile with role='client'
+-- when users register via Supabase Auth
+
+-- Sample weekly diary card (replace client_id with actual UUID)
+-- INSERT INTO public.diary_cards (client_id, week_start, week_end, medications)
+-- VALUES ('<client-user-id>', '2026-03-30', '2026-04-05', 'Sertraline 50mg');
+
+-- Sample emergency plan
+-- INSERT INTO public.emergency_plans (client_id, friend_name, friend_phone, therapist_name, therapist_phone)
+-- VALUES ('<client-user-id>', '王小華', '0912-345-678', '張治療師', '0987-654-321');
