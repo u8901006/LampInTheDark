@@ -1,32 +1,66 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { load, KEYS } from '@/lib/storage';
 
 export default function HomePage() {
+  const [counts, setCounts] = useState({
+    weekly: 0,
+    daily: 0,
+    emergency: false,
+    timeline: 0,
+    sleep: 0,
+  });
+
+  useEffect(() => {
+    const weekly = load(KEYS.weeklyDiaries, []);
+    const daily = load(KEYS.dailyDiaries, []);
+    const plan = load(KEYS.emergencyPlan, null);
+    const timeline = load(KEYS.timelineEvents, []);
+    const sleep = load(KEYS.sleepDiaries, []);
+    setCounts({
+      weekly: weekly.length,
+      daily: daily.length,
+      emergency: !!plan,
+      timeline: timeline.length,
+      sleep: sleep.length,
+    });
+  }, []);
+
+  const cards = [
+    { title: '每週日誌卡', count: counts.weekly, href: '/diary/weekly', label: '新增每週日誌' },
+    { title: '每日日誌卡', count: counts.daily, href: '/diary/daily', label: '新增每日日誌' },
+    { title: '緊急計劃', count: counts.emergency ? 1 : 0, href: '/emergency-plan', label: counts.emergency ? '編輯緊急計劃' : '填寫緊急計劃' },
+    { title: '生命歷程圖', count: counts.timeline, href: '/timeline', label: '開啟生命歷程圖' },
+    { title: '睡眠日記', count: counts.sleep, href: '/sleep-diary', label: '記錄睡眠' },
+  ];
+
   return (
-    <main className="shell hero">
-      <section className="card" style={{ padding: '2rem' }}>
-        <p style={{ color: 'var(--muted)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-          LampInTheDark
-        </p>
-        <h1 style={{ fontSize: 'clamp(2rem, 6vw, 3.5rem)', margin: '0.5rem 0 1rem' }}>
-          DBT-PTSD 電子日誌卡
-        </h1>
-        <p style={{ fontSize: '1.1rem', lineHeight: 1.7, maxWidth: '42rem', color: 'var(--muted)' }}>
-          這是一個供案主填寫 DBT-PTSD 治療日誌的數位平台。
-          你可以記錄每週與每日的情緒、行為和治療進展，
-          也可以管理緊急聯絡計劃、生命歷程圖和睡眠日記。
-        </p>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '2rem' }}>
-          <Link className="primary-link" href="/auth/login">
-            案主登入
-          </Link>
-          <Link className="primary-link" href="/admin/login" style={{ background: 'var(--muted)' }}>
-            治療師登入
-          </Link>
-        </div>
-        <p className="soft-note" style={{ marginTop: '1.5rem' }}>
-          還沒有帳號？<Link href="/auth/register" style={{ color: 'var(--accent)', fontWeight: 700 }}>註冊新帳號</Link>
-        </p>
-      </section>
-    </main>
+    <div>
+      <h1 style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>
+        DBT-PTSD 電子日誌卡
+      </h1>
+      <p style={{ color: 'var(--muted)', marginBottom: '2rem' }}>
+        選擇要填寫的項目
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
+        {cards.map(card => (
+          <div key={card.href} className="card" style={{ padding: '1.25rem' }}>
+            <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.1rem' }}>
+              {card.title}
+              {card.count > 0 && (
+                <span style={{ fontSize: '0.85rem', color: 'var(--muted)', marginLeft: '0.5rem' }}>
+                  ({card.count} 筆)
+                </span>
+              )}
+            </h3>
+            <Link className="primary-link" href={card.href} style={{ fontSize: '0.9rem', padding: '0.6rem 1rem' }}>
+              {card.label}
+            </Link>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

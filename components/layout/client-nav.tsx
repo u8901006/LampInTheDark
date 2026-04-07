@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const navItems = [
-  { href: '/dashboard', label: '儀表板' },
+  { href: '/', label: '首頁' },
   { href: '/diary/weekly', label: '每週日誌卡' },
   { href: '/diary/daily', label: '每日日誌卡' },
   { href: '/emergency-plan', label: '緊急計劃' },
@@ -14,13 +14,6 @@ const navItems = [
 
 export function ClientNav() {
   const pathname = usePathname();
-
-  async function handleLogout() {
-    const { createClient } = await import('@/lib/supabase/client');
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    window.location.href = '/auth/login';
-  }
 
   return (
     <nav style={{
@@ -37,7 +30,7 @@ export function ClientNav() {
         Lamp in the Dark
       </p>
       {navItems.map((item) => {
-        const isActive = pathname.startsWith(item.href);
+        const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
         return (
           <Link
             key={item.href}
@@ -56,23 +49,6 @@ export function ClientNav() {
           </Link>
         );
       })}
-      <div style={{ marginTop: 'auto', paddingTop: '1rem' }}>
-        <button
-          onClick={handleLogout}
-          style={{
-            width: '100%',
-            padding: '0.65rem 0.75rem',
-            border: '1px solid var(--line)',
-            borderRadius: '12px',
-            background: 'transparent',
-            color: 'var(--muted)',
-            cursor: 'pointer',
-            textAlign: 'left',
-          }}
-        >
-          登出
-        </button>
-      </div>
     </nav>
   );
 }

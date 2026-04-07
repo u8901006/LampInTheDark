@@ -28,9 +28,6 @@
         "./*"
       ]
     },
-    "types": [
-      "vitest/globals"
-    ],
     "resolveJsonModule": true
   },
   "include": [
@@ -38,9 +35,6 @@
     "components",
     "lib",
     "next-env.d.ts",
-    "supabase",
-    "tests",
-    "vitest.config.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": [
