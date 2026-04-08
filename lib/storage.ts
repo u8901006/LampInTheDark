@@ -25,3 +25,21 @@ export const KEYS = {
   timelineEvents: 'litd-timeline-events',
   sleepDiaries: 'litd-sleep-diaries',
 } as const;
+
+export interface ExportSnapshot {
+  weeklyDiaries: unknown[];
+  dailyDiaries: unknown[];
+  emergencyPlan: unknown | null;
+  timelineEvents: unknown[];
+  sleepDiaries: unknown[];
+}
+
+export function loadExportSnapshot(): ExportSnapshot {
+  return {
+    weeklyDiaries: load(KEYS.weeklyDiaries, []),
+    dailyDiaries: load(KEYS.dailyDiaries, []),
+    emergencyPlan: load(KEYS.emergencyPlan, null),
+    timelineEvents: load(KEYS.timelineEvents, []),
+    sleepDiaries: load(KEYS.sleepDiaries, []),
+  };
+}

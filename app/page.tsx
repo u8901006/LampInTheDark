@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { exportAllDataAsJson, exportAllDataAsText } from '@/lib/export';
 import { load, KEYS } from '@/lib/storage';
 
 export default function HomePage() {
@@ -44,6 +45,33 @@ export default function HomePage() {
       <p style={{ color: 'var(--muted)', marginBottom: '2rem' }}>
         選擇要填寫的項目
       </p>
+      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
+        <button
+          className="primary-link"
+          onClick={exportAllDataAsText}
+          style={{ fontSize: '0.9rem', padding: '0.6rem 1rem' }}
+        >
+          匯出 TXT
+        </button>
+        <button
+          onClick={exportAllDataAsJson}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0.6rem 1rem',
+            borderRadius: '999px',
+            border: '1px solid var(--line)',
+            background: 'transparent',
+            color: 'var(--text)',
+            fontWeight: 700,
+            cursor: 'pointer',
+            fontSize: '0.9rem',
+          }}
+        >
+          匯出 JSON
+        </button>
+      </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
         {cards.map(card => (
           <div key={card.href} className="card" style={{ padding: '1.25rem' }}>
